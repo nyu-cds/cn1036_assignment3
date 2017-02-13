@@ -5,12 +5,12 @@
     nbody_1: 38.7s
     speedup = 2.377
     
-    most improvement
+    1st improvement
     
     Reducing function call overhead
     1. preserving only important functions
     2. storing the results of BODIES.keys() and compute_mag() to avoid repeated function calls
-    3. assigning seenit.append to a local variable append to reduce searching time of the function
+    3. assigning seenit.append to a local variable "append" to reduce searching time of the function
 """
 
 PI = 3.14159265358979323
