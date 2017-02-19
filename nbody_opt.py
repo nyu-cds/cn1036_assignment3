@@ -47,11 +47,10 @@ BODIES = {
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
 
-def advance(bodies, pairs, dt):
+def advance(bodies, pairs, keys, dt):
     '''
         advance the system one timestep
     '''
-    keys = bodies.keys()
     
     for (body1, body2) in pairs:
         ([x1, y1, z1], v1, m1) = bodies[body1]
@@ -80,12 +79,10 @@ def advance(bodies, pairs, dt):
         ############## end ################
 
 
-def report_energy(bodies, pairs, e=0.0):
+def report_energy(bodies, pairs, keys, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-    
-    keys = bodies.keys()
     
     for (body1, body2) in pairs:
         ((x1, y1, z1), v1, m1) = bodies[body1]
@@ -102,12 +99,12 @@ def report_energy(bodies, pairs, e=0.0):
     return e
 
 
-def offset_momentum(bodies, ref, px=0.0, py=0.0, pz=0.0):
+def offset_momentum(bodies, ref, keys, px=0.0, py=0.0, pz=0.0):
     '''
         ref is the body in the center of the system
         offset values from this reference
     '''
-    for body in bodies.keys():
+    for body in keys:
         (r, [vx, vy, vz], m) = bodies[body]
         px -= vx * m
         py -= vy * m
@@ -128,17 +125,17 @@ def nbody(loops, reference, iterations):
         '''
     from itertools import combinations
     bodies = BODIES.copy()
-    pairs = set(combinations(bodies.keys(), 2))
+    bodies_keys = bodies.keys()
+    pairs = set(combinations(bodies_keys, 2))
     
     # Set up global state
-    offset_momentum(bodies, bodies[reference])
+    offset_momentum(bodies, bodies[reference], bodies_keys)
     
     for _ in range(loops):
-        report_energy(bodies, pairs)
+        report_energy(bodies, pairs, bodies_keys)
         for _ in range(iterations):
-            advance(bodies, pairs, 0.01)
-        print(report_energy(bodies, pairs))
+            advance(bodies, pairs, bodies_keys, 0.01)
+        print(report_energy(bodies, pairs, bodies_keys))
 
 if __name__ == '__main__':
-    import timeit
-    print(timeit.timeit("nbody(100, 'sun', 20000)", setup = "from __main__ import nbody", number = 1))
+    nbody(100, 'sun', 20000)
