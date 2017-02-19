@@ -47,38 +47,37 @@ BODIES = {
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
 
-def advance(bodies, pairs, dt, iterations):
+def advance(bodies, pairs, dt):
     '''
         advance the system one timestep
     '''
     keys = bodies.keys()
     
-    for _ in range(iterations):
-        for (body1, body2) in pairs:
-            ([x1, y1, z1], v1, m1) = bodies[body1]
-            ([x2, y2, z2], v2, m2) = bodies[body2]
-            (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+    for (body1, body2) in pairs:
+        ([x1, y1, z1], v1, m1) = bodies[body1]
+        ([x2, y2, z2], v2, m2) = bodies[body2]
+        (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
         
-            ########### update_vs ###########
-            #compute mag
-            mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v1[0] -= dx * m2 * mag
-            v1[1] -= dy * m2 * mag
-            v1[2] -= dz * m2 * mag
-            v2[0] += dx * m1 * mag
-            v2[1] += dy * m1 * mag
-            v2[2] += dz * m1 * mag
-            ############# end ###############
+        ########### update_vs ###########
+        #compute mag
+        mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+        v1[0] -= dx * m2 * mag
+        v1[1] -= dy * m2 * mag
+        v1[2] -= dz * m2 * mag
+        v2[0] += dx * m1 * mag
+        v2[1] += dy * m1 * mag
+        v2[2] += dz * m1 * mag
+        ############# end ###############
     
     
-        for body in keys:
-            (r, [vx, vy, vz], m) = bodies[body]
+    for body in keys:
+        (r, [vx, vy, vz], m) = bodies[body]
         
-            ########### update_rs #############
-            r[0] += dt * vx
-            r[1] += dt * vy
-            r[2] += dt * vz
-            ############## end ################
+        ########### update_rs #############
+        r[0] += dt * vx
+        r[1] += dt * vy
+        r[2] += dt * vz
+        ############## end ################
 
 
 def report_energy(bodies, pairs, e=0.0):
@@ -136,8 +135,10 @@ def nbody(loops, reference, iterations):
     
     for _ in range(loops):
         report_energy(bodies, pairs)
-        advance(bodies, pairs, 0.01, iterations)
+        for _ in range(iterations):
+            advance(bodies, pairs, 0.01)
         print(report_energy(bodies, pairs))
 
 if __name__ == '__main__':
-    nbody(100, 'sun', 20000)
+    import timeit
+    print(timeit.timeit("nbody(100, 'sun', 20000)", setup = "from __main__ import nbody", number = 1))
