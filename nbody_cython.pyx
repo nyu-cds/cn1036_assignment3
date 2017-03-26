@@ -135,7 +135,7 @@ cdef offset_momentum(dict bodies, char* ref, float px=0.0, float py=0.0, float p
         py -= vy * m
         pz -= vz * m
     
-    r, v, m = bodies[bytes.decode(ref)]
+    (r, v, m) = bodies[bytes.decode(ref)]
     v[0] = px / m
     v[1] = py / m
     v[2] = pz / m
@@ -150,7 +150,6 @@ cpdef nbody(int loops, char* reference, int iterations):
         '''
 
     cdef dict bodies = BODIES.copy()
-    cdef set pairs = set(combinations(bodies.keys(), 2))
     
     # Set up global state
     offset_momentum(bodies, reference)
