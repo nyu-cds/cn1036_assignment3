@@ -8,7 +8,9 @@
     nbody_numba_without_vec: 1min 7s
     nbody_numba_vec: 2min 13s
 
-    1. vec_deltas is added
+    1. adding @jit as well as function signatures to all functions
+    2. using optional(dict) in function signatures slows down the whole program, so bodies is removed from the parameters
+    3. vec_deltas is added
     """
 
 import numpy as np
