@@ -10,7 +10,8 @@ import numpy as np
 # set global variable #
 dataset_size = 10000
 
-if __name__ == '__main__':
+def sort_parallel(dataset_size):
+    
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -24,8 +25,8 @@ if __name__ == '__main__':
     if rank == 0:
         # generate unsorted dataset #
         dataset = np.random.randint(dataset_size, size=dataset_size)
-        min = min(dataset)
-        max = max(dataset)
+        min = dataset.min()
+        max = dataset.max()
         interval = (max - min)/size
 
         # distribute data points into bins #
@@ -34,6 +35,12 @@ if __name__ == '__main__':
                 process = size-1
             else:
                 process = int((i-min)/interval)
+            
+            # verify that the data point is assigned to an appropriate process #
+            try:
+                assert process<size and process>=0, "process number out of range"
+            except AssertionError as e:
+                print("AssertionError:%s"%(e))
             
             bins[process].append(i)
 
@@ -55,6 +62,11 @@ if __name__ == '__main__':
             assert sorted_list == sorted(dataset), "result is incorrect"
         except AssertionError as e:
             print("AssertionError:%s"%(e))
+
+        return sorted_list
+
+if __name__ == '__main__':
+    sorted_list = sort_parallel(dataset_size)
 
 
 
